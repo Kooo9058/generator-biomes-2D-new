@@ -11,7 +11,6 @@ class App:
 
     def run(self):
         while True:
-            pg.display.update()
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     pg.quit()
