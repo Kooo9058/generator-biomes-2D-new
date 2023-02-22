@@ -18,7 +18,7 @@ class App:
                     if event.key == pg.K_SPACE:
                         self.biomes.main_render_biomes()
 
-            self.clock.tick(settings.TIMER)
+            self.clock.tick(settings.FPS)
             pg.display.set_caption(f'FPS: {self.clock.get_fps()}')
 
 

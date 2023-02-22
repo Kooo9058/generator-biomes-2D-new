@@ -10,7 +10,7 @@ class Biomes:
     def __init__(self, app, pg):
         self.app = app
         self.pg = pg
-        self.matrix = self.create_matrix()
+        self.matrix = self.create_start_matrix()
 
     def main_render_biomes(self):
         start = time.gmtime().tm_sec
@@ -26,7 +26,7 @@ class Biomes:
         self.next_lands_sea_count()
 
     def set_start_random_lands_and_sea(self):
-        self.matrix = self.create_matrix()
+        self.matrix = self.create_start_matrix()
         for x in range(len(self.matrix)):
             for y in range(len(self.matrix[x])):
                 self.paint_pixel_element(self.matrix[x][y], x, y)
@@ -198,15 +198,15 @@ class Biomes:
 
     def paint_pixel_element(self, biome, x, y):
         if biome == BiomesType.LAND:
-            color = (139, 195, 74)
+            color = settings.COLOR_LAND
         elif biome == BiomesType.SEA:
-            color = (33, 150, 255)
+            color = settings.COLOR_SEA
         elif biome == BiomesType.SAND:
-            color = (255, 235, 59)
+            color = settings.COLOR_SAND
         elif biome == BiomesType.SEA_SHORE:
-            color = (0, 188, 255)
+            color = settings.COLOR_SEA_SHORE
         elif biome == BiomesType.WOODS:
-            color = (85, 139, 47)
+            color = settings.COLOR_WOODS
         self.pg.draw.rect(self.app.screen, color,
                           (x * settings.basicX, y * settings.basicY, settings.basicX, settings.basicY))
 
@@ -384,7 +384,7 @@ class Biomes:
         for _ in range(20):
             self.next_woods_gen()
 
-    def create_matrix(self):
+    def create_start_matrix(self):
         rows = settings.Rows
         cols = settings.Columns
         matrix = [[0] * cols for _ in range(rows)]
