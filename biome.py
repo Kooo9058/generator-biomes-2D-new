@@ -1,0 +1,398 @@
+import time
+import settings
+import random
+from biomes_type import BiomesType
+
+
+class Biomes:
+    matrix = [], []
+
+    def __init__(self, app, pg):
+        self.app = app
+        self.pg = pg
+        self.matrix = self.create_matrix()
+
+    def main_render_biomes(self):
+        start = time.gmtime().tm_sec
+        self.set_layout_lands_and_sea()
+        self.set_layout_sands()
+        self.set_layout_sea_shore()
+        self.set_layout_woods()
+        end = time.gmtime().tm_sec
+        print(f'Render Time is {end - start}')
+
+    def set_layout_lands_and_sea(self):
+        self.set_start_random_lands_and_sea()
+        self.next_lands_sea_count()
+
+    def set_start_random_lands_and_sea(self):
+        self.matrix = self.create_matrix()
+        for x in range(len(self.matrix)):
+            for y in range(len(self.matrix[x])):
+                self.paint_pixel_element(self.matrix[x][y], x, y)
+        self.pg.display.update()
+
+    def next_lands_sea_count(self):
+        for r in range(settings.COUNTS_ALGORITHMS):
+            self.next_generation_lands()
+
+    def next_generation_lands(self):
+        for x in range(len(self.matrix)):
+            for y in range(len(self.matrix[x])):
+                counter_sea = 0
+                counter_land = 0
+
+                if (x - 1) >= 0:
+                    if self.matrix[x - 1][y] == BiomesType.SEA:
+                        counter_sea += 1
+                    else:
+                        counter_land += 1
+
+                if (y - 1) >= 0:
+                    if self.matrix[x][y - 1] == BiomesType.SEA:
+                        counter_sea += 1
+                    else:
+                        counter_land += 1
+
+                if (x + 1) <= 99:
+                    if self.matrix[x + 1][y] == BiomesType.SEA:
+                        counter_sea += 1
+                    else:
+                        counter_land += 1
+
+                if (y + 1) <= 99:
+                    if self.matrix[x][y + 1] == BiomesType.SEA:
+                        counter_sea += 1
+                    else:
+                        counter_land += 1
+
+                if (y - 1) >= 0 and (x + 1) <= 99:
+                    if self.matrix[x + 1][y - 1] == BiomesType.SEA:
+                        counter_sea += 1
+                    else:
+                        counter_land += 1
+
+                if (y + 1) <= 99 and (x + 1) <= 99:
+                    if self.matrix[x + 1][y + 1] == BiomesType.SEA:
+                        counter_sea += 1
+                    else:
+                        counter_land += 1
+
+                if (y - 1) >= 0 and (x - 1) >= 0:
+                    if self.matrix[x - 1][y - 1] == BiomesType.SEA:
+                        counter_sea += 1
+                    else:
+                        counter_land += 1
+
+                if (y + 1) <= 99 and (x - 1) >= 0:
+                    if self.matrix[x - 1][y + 1] == BiomesType.SEA:
+                        counter_sea += 1
+                    else:
+                        counter_land += 1
+
+                if self.matrix[x][y] == BiomesType.LAND:
+                    if counter_sea == 3 or counter_sea == 6 \
+                            or counter_sea == 7 or counter_sea == 8:
+                        self.matrix[x][y] = BiomesType.SEA
+                        self.paint_pixel_element(self.matrix[x][y], x, y)
+
+                if self.matrix[x][y] == BiomesType.SEA:
+                    if counter_land == 3 or counter_land == 6 \
+                            or counter_land == 7 or counter_land == 8:
+                        self.matrix[x][y] = BiomesType.LAND
+                        self.paint_pixel_element(self.matrix[x][y], x, y)
+        self.pg.display.update()
+
+    def set_layout_sands(self):
+        self.start_border_sands()
+        for i in range(settings.COUNTS_ALGORITHMS_SANDS):
+            self.next_sands_gen()
+
+    def start_border_sands(self):
+        for x in range(len(self.matrix)):
+            for y in range(len(self.matrix[x])):
+                counter_sea = 0
+
+                if (x - 1) >= 0:
+                    if self.matrix[x - 1][y] == BiomesType.SEA:
+                        counter_sea += 1
+
+                if (y - 1) >= 0:
+                    if self.matrix[x][y - 1] == BiomesType.SEA:
+                        counter_sea += 1
+
+                if (x + 1) <= 99:
+                    if self.matrix[x + 1][y] == BiomesType.SEA:
+                        counter_sea += 1
+
+                if (y + 1) <= 99:
+                    if self.matrix[x][y + 1] == BiomesType.SEA:
+                        counter_sea += 1
+
+                if (y - 1) >= 0 and (x + 1) <= 99:
+                    if self.matrix[x + 1][y - 1] == BiomesType.SEA:
+                        counter_sea += 1
+
+                if (y + 1) <= 99 and (x + 1) <= 99:
+                    if self.matrix[x + 1][y + 1] == BiomesType.SEA:
+                        counter_sea += 1
+
+                if (y - 1) >= 0 and (x - 1) >= 0:
+                    if self.matrix[x - 1][y - 1] == BiomesType.SEA:
+                        counter_sea += 1
+
+                if (y + 1) <= 99 and (x - 1) >= 0:
+                    if self.matrix[x - 1][y + 1] == BiomesType.SEA:
+                        counter_sea += 1
+
+                if self.matrix[x][y] == BiomesType.LAND:
+                    if counter_sea >= 1:
+                        self.matrix[x][y] = BiomesType.SAND
+                        self.paint_pixel_element(self.matrix[x][y], x, y)
+        self.pg.display.update()
+
+    def next_sands_gen(self):
+        for x in range(len(self.matrix)):
+            for y in range(len(self.matrix[x])):
+                counter_sands = 0
+
+                if (x - 1) >= 0:
+                    if self.matrix[x - 1][y] == BiomesType.SAND:
+                        counter_sands += 1
+
+                if (y - 1) >= 0:
+                    if self.matrix[x][y - 1] == BiomesType.SAND:
+                        counter_sands += 1
+
+                if (x + 1) <= 99:
+                    if self.matrix[x + 1][y] == BiomesType.SAND:
+                        counter_sands += 1
+
+                if (y + 1) <= 99:
+                    if self.matrix[x][y + 1] == BiomesType.SAND:
+                        counter_sands += 1
+
+                if (y - 1) >= 0 and (x + 1) <= 99:
+                    if self.matrix[x + 1][y - 1] == BiomesType.SAND:
+                        counter_sands += 1
+
+                if (y + 1) <= 99 and (x + 1) <= 99:
+                    if self.matrix[x + 1][y + 1] == BiomesType.SAND:
+                        counter_sands += 1
+
+                if (y - 1) >= 0 and (x - 1) >= 0:
+                    if self.matrix[x - 1][y - 1] == BiomesType.SEA:
+                        counter_sands += 1
+
+                if (y + 1) <= 99 and (x - 1) >= 0:
+                    if self.matrix[x - 1][y + 1] == BiomesType.SAND:
+                        counter_sands += 1
+
+                if self.matrix[x][y] == BiomesType.SEA:
+                    if counter_sands >= 5:
+                        r = random.randint(0, 50)
+                        if r == 1:
+                            self.matrix[x][y] = BiomesType.SAND
+                            self.paint_pixel_element(self.matrix[x][y], x, y)
+        self.pg.display.update()
+
+    def paint_pixel_element(self, biome, x, y):
+        if biome == BiomesType.LAND:
+            color = (139, 195, 74)
+        elif biome == BiomesType.SEA:
+            color = (33, 150, 255)
+        elif biome == BiomesType.SAND:
+            color = (255, 235, 59)
+        elif biome == BiomesType.SEA_SHORE:
+            color = (0, 188, 255)
+        elif biome == BiomesType.WOODS:
+            color = (85, 139, 47)
+        self.pg.draw.rect(self.app.screen, color,
+                          (x * settings.basicX, y * settings.basicY, settings.basicX, settings.basicY))
+
+    def start_border_sea_shore(self):
+        for x in range(len(self.matrix)):
+            for y in range(len(self.matrix[x])):
+                counter_sands = 0
+
+                if (x - 1) >= 0:
+                    if self.matrix[x - 1][y] == BiomesType.SAND:
+                        counter_sands += 1
+
+                if (y - 1) >= 0:
+                    if self.matrix[x][y - 1] == BiomesType.SAND:
+                        counter_sands += 1
+
+                if (x + 1) <= 99:
+                    if self.matrix[x + 1][y] == BiomesType.SAND:
+                        counter_sands += 1
+
+                if (y + 1) <= 99:
+                    if self.matrix[x][y + 1] == BiomesType.SAND:
+                        counter_sands += 1
+
+                if (y - 1) >= 0 and (x + 1) <= 99:
+                    if self.matrix[x + 1][y - 1] == BiomesType.SAND:
+                        counter_sands += 1
+
+                if (y + 1) <= 99 and (x + 1) <= 99:
+                    if self.matrix[x + 1][y + 1] == BiomesType.SAND:
+                        counter_sands += 1
+
+                if (y - 1) >= 0 and (x - 1) >= 0:
+                    if self.matrix[x - 1][y - 1] == BiomesType.SAND:
+                        counter_sands += 1
+
+                if (y + 1) <= 99 and (x - 1) >= 0:
+                    if self.matrix[x - 1][y + 1] == BiomesType.SAND:
+                        counter_sands += 1
+
+                if self.matrix[x][y] == BiomesType.SEA:
+                    if counter_sands >= 1:
+                        self.matrix[x][y] = BiomesType.SEA_SHORE
+                        self.paint_pixel_element(self.matrix[x][y], x, y)
+        self.pg.display.update()
+
+    def next_sea_shore_gen(self):
+        for x in range(len(self.matrix)):
+            for y in range(len(self.matrix[x])):
+                counter_sea_shore = 0
+
+                if (x - 1) >= 0:
+                    if self.matrix[x - 1][y] == BiomesType.SEA_SHORE:
+                        counter_sea_shore += 1
+
+                if (y - 1) >= 0:
+                    if self.matrix[x][y - 1] == BiomesType.SEA_SHORE:
+                        counter_sea_shore += 1
+
+                if (x + 1) <= 99:
+                    if self.matrix[x + 1][y] == BiomesType.SEA_SHORE:
+                        counter_sea_shore += 1
+
+                if (y + 1) <= 99:
+                    if self.matrix[x][y + 1] == BiomesType.SEA_SHORE:
+                        counter_sea_shore += 1
+
+                if (y - 1) >= 0 and (x + 1) <= 99:
+                    if self.matrix[x + 1][y - 1] == BiomesType.SEA_SHORE:
+                        counter_sea_shore += 1
+
+                if (y + 1) <= 99 and (x + 1) <= 99:
+                    if self.matrix[x + 1][y + 1] == BiomesType.SEA_SHORE:
+                        counter_sea_shore += 1
+
+                if (y - 1) >= 0 and (x - 1) >= 0:
+                    if self.matrix[x - 1][y - 1] == BiomesType.SEA_SHORE:
+                        counter_sea_shore += 1
+
+                if (y + 1) <= 99 and (x - 1) >= 0:
+                    if self.matrix[x - 1][y + 1] == BiomesType.SEA_SHORE:
+                        counter_sea_shore += 1
+
+                if self.matrix[x][y] == BiomesType.SEA:
+                    if counter_sea_shore >= 4:
+                        r = random.randint(0, 30)
+                        if r == 1:
+                            self.matrix[x][y] = BiomesType.SEA_SHORE
+                            self.paint_pixel_element(self.matrix[x][y], x, y)
+        self.pg.display.update()
+
+    def set_layout_sea_shore(self):
+        self.start_border_sea_shore()
+        for i in range(50):
+            self.next_sea_shore_gen()
+
+    def start_random_woods(self):
+        for x in range(len(self.matrix)):
+            for y in range(len(self.matrix[x])):
+                if self.matrix[x][y] == BiomesType.LAND:
+                    r = random.randint(1, 2)
+                    if r == 1:
+                        self.matrix[x][y] = BiomesType.WOODS
+                        self.paint_pixel_element(self.matrix[x][y], x, y)
+
+    def next_woods_gen(self):
+        for x in range(len(self.matrix)):
+            for y in range(len(self.matrix[x])):
+                counter_land = 0
+                counter_woods = 0
+
+                if (x - 1) >= 0:
+                    if self.matrix[x - 1][y] == BiomesType.LAND:
+                        counter_land += 1
+                    else:
+                        counter_woods += 1
+
+                if (y - 1) >= 0:
+                    if self.matrix[x][y - 1] == BiomesType.LAND:
+                        counter_land += 1
+                    else:
+                        counter_woods += 1
+
+                if (x + 1) <= 99:
+                    if self.matrix[x + 1][y] == BiomesType.LAND:
+                        counter_land += 1
+                    else:
+                        counter_woods += 1
+
+                if (y + 1) <= 99:
+                    if self.matrix[x][y + 1] == BiomesType.LAND:
+                        counter_land += 1
+                    else:
+                        counter_woods += 1
+
+                if (y - 1) >= 0 and (x + 1) <= 99:
+                    if self.matrix[x + 1][y - 1] == BiomesType.LAND:
+                        counter_land += 1
+                    else:
+                        counter_woods += 1
+
+                if (y + 1) <= 99 and (x + 1) <= 99:
+                    if self.matrix[x + 1][y + 1] == BiomesType.LAND:
+                        counter_land += 1
+                    else:
+                        counter_woods += 1
+
+                if (y - 1) >= 0 and (x - 1) >= 0:
+                    if self.matrix[x - 1][y - 1] == BiomesType.LAND:
+                        counter_land += 1
+                    else:
+                        counter_woods += 1
+
+                if (y + 1) <= 99 and (x - 1) >= 0:
+                    if self.matrix[x - 1][y + 1] == BiomesType.LAND:
+                        counter_land += 1
+                    else:
+                        counter_woods += 1
+
+                if self.matrix[x][y] == BiomesType.LAND:
+                    if counter_woods == 3 or counter_woods == 6 \
+                            or counter_woods == 7 or counter_woods == 8:
+                        self.matrix[x][y] = BiomesType.WOODS
+                        self.paint_pixel_element(self.matrix[x][y], x, y)
+
+                if self.matrix[x][y] == BiomesType.WOODS:
+                    if counter_land == 3 or counter_land == 6 \
+                            or counter_land == 7 or counter_land == 8:
+                        self.matrix[x][y] = BiomesType.LAND
+                        self.paint_pixel_element(self.matrix[x][y], x, y)
+        self.pg.display.update()
+
+    def set_layout_woods(self):
+        self.start_random_woods()
+        for _ in range(20):
+            self.next_woods_gen()
+
+    @staticmethod
+    def create_matrix():
+        rows = settings.Rows
+        cols = settings.Columns
+        matrix = [[0] * cols for _ in range(rows)]
+
+        for i in range(rows):
+            for j in range(cols):
+                r = random.randint(1, 2)
+                matrix[i][j] = BiomesType.SEA if (r == 1) else BiomesType.LAND
+
+        return matrix
