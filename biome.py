@@ -384,8 +384,7 @@ class Biomes:
         for _ in range(20):
             self.next_woods_gen()
 
-    @staticmethod
-    def create_matrix():
+    def create_matrix(self):
         rows = settings.Rows
         cols = settings.Columns
         matrix = [[0] * cols for _ in range(rows)]
@@ -394,5 +393,7 @@ class Biomes:
             for j in range(cols):
                 r = random.randint(1, 2)
                 matrix[i][j] = BiomesType.SEA if (r == 1) else BiomesType.LAND
+                self.paint_pixel_element(matrix[i][j], i, j)
+        self.pg.display.update()
 
         return matrix
