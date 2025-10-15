@@ -26,7 +26,10 @@ For each cell, a neighborhood is defined — the cells surrounding the current o
 
 This neighborhood is needed so that the state of the current cell can be updated based on the states of its neighbors at each iteration. The state changes according to specific rules. For example, if the current cell is empty (0), but there are 3 or more filled (1) neighbors in its neighborhood, then the current cell becomes filled (1).
 
-![2](https://github.com/Kooo9058/generator-biomes-2D-new/blob/tools/res/2.png)
+<div align="center">
+  ![2](https://github.com/Kooo9058/generator-biomes-2D-new/blob/tools/res/2.png)
+</div>
+
 
 
 One step of a cellular automaton involves going through all the cells and, based on the current state of each cell and its neighborhood, determining the new state the cell will have in the next step. Before starting the automaton, the initial state of the cells is defined, which can be set deliberately or randomly. A set of such simple rules can create astonishing animations — here is one such example.
