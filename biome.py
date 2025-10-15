@@ -107,46 +107,15 @@ class Biomes:
                           (x * settings.basicX, y * settings.basicY, settings.basicX, settings.basicY))
 
     def start_border_sea_shore(self):
-        for x in range(len(self.matrix)):
-            for y in range(len(self.matrix[x])):
-                counter_sands = 0
-
-                if (x - 1) >= 0:
-                    if self.matrix[x - 1][y] == BiomesType.SAND:
-                        counter_sands += 1
-
-                if (y - 1) >= 0:
-                    if self.matrix[x][y - 1] == BiomesType.SAND:
-                        counter_sands += 1
-
-                if (x + 1) <= 99:
-                    if self.matrix[x + 1][y] == BiomesType.SAND:
-                        counter_sands += 1
-
-                if (y + 1) <= 99:
-                    if self.matrix[x][y + 1] == BiomesType.SAND:
-                        counter_sands += 1
-
-                if (y - 1) >= 0 and (x + 1) <= 99:
-                    if self.matrix[x + 1][y - 1] == BiomesType.SAND:
-                        counter_sands += 1
-
-                if (y + 1) <= 99 and (x + 1) <= 99:
-                    if self.matrix[x + 1][y + 1] == BiomesType.SAND:
-                        counter_sands += 1
-
-                if (y - 1) >= 0 and (x - 1) >= 0:
-                    if self.matrix[x - 1][y - 1] == BiomesType.SAND:
-                        counter_sands += 1
-
-                if (y + 1) <= 99 and (x - 1) >= 0:
-                    if self.matrix[x - 1][y + 1] == BiomesType.SAND:
-                        counter_sands += 1
-
+        rows = len(self.matrix)
+        cols = len(self.matrix[0])
+        for x in range(rows):
+            for y in range(cols):
                 if self.matrix[x][y] == BiomesType.SEA:
+                    counter_sands = self.count_neighbors(x, y, BiomesType.SAND)
                     if counter_sands >= 1:
                         self.matrix[x][y] = BiomesType.SEA_SHORE
-                        self.paint_pixel_element(self.matrix[x][y], x, y)
+                        self.paint_pixel_element(BiomesType.SEA_SHORE, x, y)
         self.pg.display.update()
 
     def next_sea_shore_gen(self):
