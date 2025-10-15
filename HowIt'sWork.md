@@ -39,22 +39,77 @@ For this project, we will use PyGame — why exactly PyGame will be explained at
 
 We also need to create a settings file, where we will store constants for the project. Using this file, we can easily change project settings, such as the frame rate limit or the base window resolution.
 
-КУСОК КОДА 
+```python
+class App:
+    def __init__(self):
+        self.screen = pg.display.set_mode(settings.RES)
+        self.clock = pg.time.Clock()
+        self.biomes = bm.Biomes(app=self, pg=pg)
 
+    def run(self):
+        while True:
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
+                elif event.type == pg.KEYDOWN:
+                    if event.key == pg.K_SPACE:
+                        self.biomes.main_render_biomes()
+
+            self.clock.tick(settings.FPS)
+            pg.display.set_caption(f'FPS: {self.clock.get_fps()}')
+
+
+if __name__ == '__main__':
+    app = App()
+    app.run()
+
+```
 
 Now that the basic class is ready, let's move on to rendering frames. The first frame will display a chaotic distribution of land and sea. For this, we will use a matrix that will be filled randomly. To fill such a matrix, we need biome types, so we cannot do without an enum, where we will define the main biomes we will work with.
 
 We will have a total of five biomes: land, sea, sand, shore, and forest.
 
-КУСОК КОДА 
+```python
+class BiomesType(Enum):
+    SEA = 0
+    LAND = 1
+    SAND = 2
+    SEA_SHORE = 3
+    WOODS = 4
+```
 
 Now let's create a method that will initialize the matrix with a random distribution of land and sea, with a 50% probability for each. It’s also worth noting that the number of columns and rows will be 300. Thus, with a resolution of 600 by 600 pixels, each “biome pixel” will be 2 by 2 real pixels in size. This needs to be taken into account when rendering the actual pixels, since their position will be offset by the size of the “biome pixel.”
 
-КУСОК КОДА 
+```python 
+    def create_start_matrix(self):
+        rows, cols = settings.Rows, settings.Columns
+        matrix = [[BiomesType.SEA if random.randint(1,2)==1 else BiomesType.LAND
+                   for _ in range(cols)] for _ in range(rows)]
+        for i in range(rows):
+            for j in range(cols):
+                self.paint_pixel_element(matrix[i][j], i, j)
+        self.pg.display.update()
+        return matrix
+
+
+
+```
 
 Now a few words about rendering. After initializing each element of the matrix, we immediately draw it on the canvas. This is handled by the paint_pixel_element method, which takes the type of the current biome and its coordinates. Based on the biome type, it sets the color and draws the element, taking into account the actual pixel size and its offset.
 
-КУСОК КОДА
+```python 
+    def paint_pixel_element(self, biome, x, y):
+        color = {
+            BiomesType.LAND: settings.COLOR_LAND,
+            BiomesType.SEA: settings.COLOR_SEA,
+            BiomesType.SAND: settings.COLOR_SAND,
+            BiomesType.SEA_SHORE: settings.COLOR_SEA_SHORE,
+            BiomesType.WOODS: settings.COLOR_WOODS
+        }[biome]
+        self.pg.draw.rect(self.app.screen, color,
+                          (x*settings.basicX, y*settings.basicY, settings.basicX, settings.basicY))
+
+```
 
 After creating the matrix and rendering each element, we need to call the display.update() method to refresh the current canvas, and we will see the random distribution.
 
@@ -68,7 +123,38 @@ Now, let's create the first layer. For this, we need to iterate through the gene
 
 ![5](https://github.com/Kooo9058/generator-biomes-2D-new/blob/tools/res/5.jpg)
 
-КУСОК КОДА 
+```python 
+    def set_layout_lands_and_sea(self):
+        self.matrix = self.create_start_matrix()
+        for _ in range(settings.COUNTS_ALGORITHMS):
+            self.next_generation(BiomesType.LAND, BiomesType.SEA, [3,6,7,8])
+            self.next_generation(BiomesType.SEA, BiomesType.LAND, [3,6,7,8])
+
+    # -------------------- GENERIC --------------------
+    def count_neighbors(self, x, y, biome_type):
+        count = 0
+        rows, cols = len(self.matrix), len(self.matrix[0])
+        for dx in [-1,0,1]:
+            for dy in [-1,0,1]:
+                if dx == 0 and dy == 0:
+                    continue
+                nx, ny = x+dx, y+dy
+                if 0 <= nx < rows and 0 <= ny < cols:
+                    if self.matrix[nx][ny] == biome_type:
+                        count += 1
+        return count
+
+    def next_generation(self, target_biome, new_biome, rules):
+        rows, cols = len(self.matrix), len(self.matrix[0])
+        for x in range(rows):
+            for y in range(cols):
+                neighbors = self.count_neighbors(x, y, new_biome)
+                if self.matrix[x][y] == target_biome and neighbors in rules:
+                    self.matrix[x][y] = new_biome
+                    self.paint_pixel_element(new_biome, x, y)
+        self.pg.display.update()
+
+```
 
 After approximately 200 generations, we can observe that our noise now resembles an archipelago of islands. I think this result is quite satisfactory, so we can move on to working on the next layer.
 
