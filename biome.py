@@ -60,6 +60,7 @@ class Biomes:
                 if self.matrix[x][y] == target_biome and neighbors in rules:
                     self.matrix[x][y] = new_biome
                     self.paint_pixel_element(new_biome, x, y)
+        self.pg.display.update()
 
 
 
