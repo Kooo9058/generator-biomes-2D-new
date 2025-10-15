@@ -119,48 +119,15 @@ class Biomes:
         self.pg.display.update()
 
     def next_sea_shore_gen(self):
-        for x in range(len(self.matrix)):
-            for y in range(len(self.matrix[x])):
-                counter_sea_shore = 0
-
-                if (x - 1) >= 0:
-                    if self.matrix[x - 1][y] == BiomesType.SEA_SHORE:
-                        counter_sea_shore += 1
-
-                if (y - 1) >= 0:
-                    if self.matrix[x][y - 1] == BiomesType.SEA_SHORE:
-                        counter_sea_shore += 1
-
-                if (x + 1) <= 99:
-                    if self.matrix[x + 1][y] == BiomesType.SEA_SHORE:
-                        counter_sea_shore += 1
-
-                if (y + 1) <= 99:
-                    if self.matrix[x][y + 1] == BiomesType.SEA_SHORE:
-                        counter_sea_shore += 1
-
-                if (y - 1) >= 0 and (x + 1) <= 99:
-                    if self.matrix[x + 1][y - 1] == BiomesType.SEA_SHORE:
-                        counter_sea_shore += 1
-
-                if (y + 1) <= 99 and (x + 1) <= 99:
-                    if self.matrix[x + 1][y + 1] == BiomesType.SEA_SHORE:
-                        counter_sea_shore += 1
-
-                if (y - 1) >= 0 and (x - 1) >= 0:
-                    if self.matrix[x - 1][y - 1] == BiomesType.SEA_SHORE:
-                        counter_sea_shore += 1
-
-                if (y + 1) <= 99 and (x - 1) >= 0:
-                    if self.matrix[x - 1][y + 1] == BiomesType.SEA_SHORE:
-                        counter_sea_shore += 1
-
+        rows = len(self.matrix)
+        cols = len(self.matrix[0])
+        for x in range(rows):
+            for y in range(cols):
                 if self.matrix[x][y] == BiomesType.SEA:
-                    if counter_sea_shore >= 4:
-                        r = random.randint(0, 30)
-                        if r == 1:
-                            self.matrix[x][y] = BiomesType.SEA_SHORE
-                            self.paint_pixel_element(self.matrix[x][y], x, y)
+                    counter_shore = self.count_neighbors(x, y, BiomesType.SEA_SHORE)
+                    if counter_shore >= 4 and random.randint(1, 30) == 1:
+                        self.matrix[x][y] = BiomesType.SEA_SHORE
+                        self.paint_pixel_element(BiomesType.SEA_SHORE, x, y)
         self.pg.display.update()
 
     def set_layout_sea_shore(self):
