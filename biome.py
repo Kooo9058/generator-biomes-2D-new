@@ -138,46 +138,15 @@ class Biomes:
             self.next_sands_gen()
 
     def start_border_sands(self):
-        for x in range(len(self.matrix)):
-            for y in range(len(self.matrix[x])):
-                counter_sea = 0
-
-                if (x - 1) >= 0:
-                    if self.matrix[x - 1][y] == BiomesType.SEA:
-                        counter_sea += 1
-
-                if (y - 1) >= 0:
-                    if self.matrix[x][y - 1] == BiomesType.SEA:
-                        counter_sea += 1
-
-                if (x + 1) <= 99:
-                    if self.matrix[x + 1][y] == BiomesType.SEA:
-                        counter_sea += 1
-
-                if (y + 1) <= 99:
-                    if self.matrix[x][y + 1] == BiomesType.SEA:
-                        counter_sea += 1
-
-                if (y - 1) >= 0 and (x + 1) <= 99:
-                    if self.matrix[x + 1][y - 1] == BiomesType.SEA:
-                        counter_sea += 1
-
-                if (y + 1) <= 99 and (x + 1) <= 99:
-                    if self.matrix[x + 1][y + 1] == BiomesType.SEA:
-                        counter_sea += 1
-
-                if (y - 1) >= 0 and (x - 1) >= 0:
-                    if self.matrix[x - 1][y - 1] == BiomesType.SEA:
-                        counter_sea += 1
-
-                if (y + 1) <= 99 and (x - 1) >= 0:
-                    if self.matrix[x - 1][y + 1] == BiomesType.SEA:
-                        counter_sea += 1
-
+        rows = len(self.matrix)
+        cols = len(self.matrix[0])
+        for x in range(rows):
+            for y in range(cols):
                 if self.matrix[x][y] == BiomesType.LAND:
+                    counter_sea = self.count_neighbors(x, y, BiomesType.SEA)
                     if counter_sea >= 1:
                         self.matrix[x][y] = BiomesType.SAND
-                        self.paint_pixel_element(self.matrix[x][y], x, y)
+                        self.paint_pixel_element(BiomesType.SAND, x, y)
         self.pg.display.update()
 
     def next_sands_gen(self):
