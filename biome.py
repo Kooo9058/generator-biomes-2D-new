@@ -145,71 +145,18 @@ class Biomes:
                         self.paint_pixel_element(self.matrix[x][y], x, y)
 
     def next_woods_gen(self):
-        for x in range(len(self.matrix)):
-            for y in range(len(self.matrix[x])):
-                counter_land = 0
-                counter_woods = 0
-
-                if (x - 1) >= 0:
-                    if self.matrix[x - 1][y] == BiomesType.LAND:
-                        counter_land += 1
-                    else:
-                        counter_woods += 1
-
-                if (y - 1) >= 0:
-                    if self.matrix[x][y - 1] == BiomesType.LAND:
-                        counter_land += 1
-                    else:
-                        counter_woods += 1
-
-                if (x + 1) <= 99:
-                    if self.matrix[x + 1][y] == BiomesType.LAND:
-                        counter_land += 1
-                    else:
-                        counter_woods += 1
-
-                if (y + 1) <= 99:
-                    if self.matrix[x][y + 1] == BiomesType.LAND:
-                        counter_land += 1
-                    else:
-                        counter_woods += 1
-
-                if (y - 1) >= 0 and (x + 1) <= 99:
-                    if self.matrix[x + 1][y - 1] == BiomesType.LAND:
-                        counter_land += 1
-                    else:
-                        counter_woods += 1
-
-                if (y + 1) <= 99 and (x + 1) <= 99:
-                    if self.matrix[x + 1][y + 1] == BiomesType.LAND:
-                        counter_land += 1
-                    else:
-                        counter_woods += 1
-
-                if (y - 1) >= 0 and (x - 1) >= 0:
-                    if self.matrix[x - 1][y - 1] == BiomesType.LAND:
-                        counter_land += 1
-                    else:
-                        counter_woods += 1
-
-                if (y + 1) <= 99 and (x - 1) >= 0:
-                    if self.matrix[x - 1][y + 1] == BiomesType.LAND:
-                        counter_land += 1
-                    else:
-                        counter_woods += 1
-
-                if self.matrix[x][y] == BiomesType.LAND:
-                    if counter_woods == 3 or counter_woods == 6 \
-                            or counter_woods == 7 or counter_woods == 8:
-                        self.matrix[x][y] = BiomesType.WOODS
-                        self.paint_pixel_element(self.matrix[x][y], x, y)
-
-                if self.matrix[x][y] == BiomesType.WOODS:
-                    if counter_land == 3 or counter_land == 6 \
-                            or counter_land == 7 or counter_land == 8:
-                        self.matrix[x][y] = BiomesType.LAND
-                        self.paint_pixel_element(self.matrix[x][y], x, y)
-        self.pg.display.update()
+        # LAND -> WOODS
+        self.next_generation(
+            target_biome=BiomesType.LAND,
+            new_biome=BiomesType.WOODS,
+            rules=[3, 6, 7, 8]
+        )
+        # WOODS -> LAND
+        self.next_generation(
+            target_biome=BiomesType.WOODS,
+            new_biome=BiomesType.LAND,
+            rules=[3, 6, 7, 8]
+        )
 
     def set_layout_woods(self):
         self.start_random_woods()
