@@ -186,3 +186,6 @@ The final layer will be a dense forest. First, we need to create a random distri
 Fewer generations are required to render the forest, approximately 30. This is because, due to the boundary conditions, the number of cells available for the forest is much smaller, so fewer generations are needed for clustering.
 
 ![12](https://github.com/Kooo9058/generator-biomes-2D-new/blob/tools/res/12.jpg)
+
+
+![generator_biomes](https://github.com/Kooo9058/generator-biomes-2D-new/blob/main/res/generator_biomes.gif)

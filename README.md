@@ -1,7 +1,7 @@
 
 # A simple biomes on the map.
 
-![generator_biomes](https://github.com/Kooo9058/generator-biomes-2D-new/blob/main/res/generator_biomes.gif)
+![1](https://github.com/Kooo9058/generator-biomes-2D-new/blob/tools/res/1.jpg)
 
 ## How to use?
 It's simple. Just build the project and press the space button on your keyboard.
